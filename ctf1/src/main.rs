@@ -1,10 +1,11 @@
 use std::time::{SystemTime, UNIX_EPOCH};
-use std::fs;
+use std::fs::{self, File};
 use base64::{encode,decode};
-use std::io;
+use std::io::{self, Read};
 
 fn main() {
     let o_string = "are we really bounded by time?";
+    println!("{}", o_string);
     let e_string = encode(o_string);
 
     let key = generate_key();
@@ -25,7 +26,7 @@ fn main() {
     let num = result.to_string().len();
 
     save_to_file("sum.txt", result.to_string());
-    let saved_result: u64 = match fs::read_to_string("sum.txt") {
+    let _saved_result: u64 = match fs::read_to_string("sum.txt") {
         Ok(content) => content.trim().parse().unwrap_or(0),
         Err(err) => {
             eprintln!("Error reading from file: {}", err);
@@ -33,6 +34,7 @@ fn main() {
         }
     };
 
+    
     println!("Enter");
 
 
@@ -45,7 +47,14 @@ fn main() {
     match user_guess {
         Ok(guess) => {
             if guess == num.try_into().unwrap() {
-                println!("{}", saved_result);
+                match File::open("flag.txt") {
+                    Ok(mut file) => {
+                        let mut contents = String::new();
+                        file.read_to_string(&mut contents).expect("Failed to read flag.txt");
+                        println!("{}", contents);
+                    }
+                    Err(_) => println!("Failed to open flag.txt"),
+                }
             }
             
              else {

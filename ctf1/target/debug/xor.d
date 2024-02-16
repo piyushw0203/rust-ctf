@@ -1,1 +1,1 @@
-E:\College\Quark\Rust\ctf\ctf11\target\debug\xor.exe: E:\College\Quark\Rust\ctf\ctf11\src\main.rs
+E:\College\Quark\Rust\rust-ctf\ctf1\target\debug\xor.exe: E:\College\Quark\Rust\rust-ctf\ctf1\src\main.rs

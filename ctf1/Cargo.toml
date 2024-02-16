@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 base64 = "0.13"
+async-std = { version = "1.12.0", features = ["attributes", "async-io"] }

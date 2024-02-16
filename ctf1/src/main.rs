@@ -1,9 +1,28 @@
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{SystemTime, UNIX_EPOCH, Duration};
 use std::fs::{self, File};
 use base64::{encode,decode};
-use std::io::{self, Read};
+use std::io ::{self as stdio, Read as read};
+use async_std::io;
 
-fn main() {
+
+
+// Function allows User-Input for 10 seconds only
+async fn input_for_10sec() -> Result<String, std::io::Error> {
+    let input = io::timeout(Duration::from_secs(10), async {
+        let mut buffer = String::new();
+        let stdin = io::stdin();
+        stdin.read_line(&mut buffer).await?;
+        Ok(buffer)
+    }).await;
+
+    input
+}
+// --
+#[async_std::main]
+async fn main() {
+
+
+
     let o_string = "are we really bounded by time?";
     println!("{}", o_string);
     let e_string = encode(o_string);
@@ -38,9 +57,11 @@ fn main() {
     println!("Enter");
 
 
-    let mut user_input = String::new();
-    io::stdin().read_line(&mut user_input).expect("Failed to read line");
-
+    let user_input = input_for_10sec().await;
+    let user_input = match user_input {
+        Ok(input_buff) => input_buff,
+        Err(_) => {println!("\nPlease give your input within 10 seconds ⏳⌛\n"); return},
+    }; 
     let user_guess: Result<u64, _> = user_input.trim().parse();
 
     

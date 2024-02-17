@@ -1,8 +1,22 @@
-use std::{fs::File, io::{self, Read}};
-
+use std::{fs::File, io::{self as ioself, Read as read}};
+use async_std::io;
+use std::time::Duration;
 struct PuzzleResult {
     result: String,
 }
+
+// Function allows User-Input for 10 seconds only
+async fn input_for_10sec() -> Result<String, std::io::Error> {
+    let input = io::timeout(Duration::from_secs(10), async {
+        let mut buffer = String::new();
+        let stdin = io::stdin();
+        stdin.read_line(&mut buffer).await?;
+        Ok(buffer)
+    }).await;
+
+    input
+}
+// --
 
 impl PuzzleResult {
     fn new(initial: &str) -> PuzzleResult {
@@ -37,15 +51,20 @@ impl PuzzleResult {
 
 }
 
-fn main() {
+#[async_std::main]
+async fn main() {
     let puzzle_result = PuzzleResult::new("Rust");
 
 
 
     
     println!("Enter your answer: ");
-    let mut user_input = String::new();
-    io::stdin().read_line(&mut user_input).expect("Failed to read line");
+    let user_input = input_for_10sec().await;
+    let user_input = match user_input {
+        Ok(input_buff) => input_buff,
+        Err(_) => {println!("\nPlease give your input within 10 seconds ⏳⌛\n"); return},
+    }; 
+    
 
     
     if puzzle_result.validate_answer(&user_input) {
